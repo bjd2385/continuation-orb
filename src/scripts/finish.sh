@@ -1,20 +1,22 @@
+# shellcheck disable=SC2288
+
 if ! which curl > /dev/null; then
-    echo "curl is required to use this command"
+    echo "curl is required to use this command" >&2
     exit 1
 fi
 
 if ! which jq > /dev/null; then
-    echo "jq is required to use this command"
+    echo "jq is required to use this command" >&2
     exit 1
 fi
 
-JSON_BODY=$( jq -n \
+JSON_BODY="$(jq -n \
   --arg continuation "$CIRCLE_CONTINUATION_KEY" \
   '{"continuation-key": $continuation, "configuration": "{version: 2, jobs: {}, workflows: {version: 2}}", parameters: {}}'
-)
+)"
 echo "$JSON_BODY"
 
-[[ $(curl \
+[ $(curl \
         -o /dev/stderr \
         -w '%{http_code}' \
         -XPOST \
@@ -22,4 +24,4 @@ echo "$JSON_BODY"
         -H "Accept: application/json"  \
         --data "${JSON_BODY}" \
         "https://${CIRCLECI_DOMAIN}/api/v2/pipeline/continue") \
-   -eq 200 ]]
+   -eq 200 ]

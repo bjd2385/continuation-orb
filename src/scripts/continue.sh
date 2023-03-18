@@ -1,24 +1,22 @@
-#!/bin/sh
-
-set -e
+# shellcheck disable=SC2288
 
 if [ -z "${CIRCLE_CONTINUATION_KEY}" ]; then
-    echo "CIRCLE_CONTINUATION_KEY is required. Make sure setup workflows are enabled."
+    echo "CIRCLE_CONTINUATION_KEY is required. Make sure setup workflows are enabled." >&2
     exit 1
 fi
 
 if [ -z "${CONFIG_PATH}" ]; then
-    echo "CONFIG_PATH is required."
+    echo "CONFIG_PATH is required." >&2
     exit 1
 fi
 
 if ! which curl > /dev/null; then
-    echo "curl is required to use this command"
+    echo "curl is required to use this command" >&2
     exit 1
 fi
 
 if ! which jq > /dev/null; then
-    echo "jq is required to use this command"
+    echo "jq is required to use this command" >&2
     exit 1
 fi
 
@@ -31,7 +29,7 @@ if ! $COMMAND; then
 fi
 
 mkdir -p /tmp/circleci
-rm -rf /tmp/circleci/continue_post.json
+rm /tmp/circleci/continue_post.json
 
 # Escape the config as a JSON string.
 jq -Rs '.' "$CONFIG_PATH" > /tmp/circleci/config-string.json
